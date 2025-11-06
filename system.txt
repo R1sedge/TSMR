@@ -1,0 +1,2 @@
+\frac{dx}{dt} = \alpha x - \beta x y + 2.5 x^2
+\frac{dy}{dt} = \delta x y - \gamma y - \frac{1}{2} y^2
