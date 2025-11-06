@@ -28,11 +28,10 @@ def convert_expression(expr):
 def read_system(path):
 
     variables = []
-
+    equations = []
 
     with open(path, 'r') as f:
         lines = f.readlines()
-
 
     for line in lines:
         line = line.strip()
@@ -45,10 +44,24 @@ def read_system(path):
 
         expr = convert_expression(right)
 
-        equation = sp.sympify(expr)
-        print(equation)
+        equations.append(expr)
 
+    return variables, equations
+
+def read_constants(path):
+    with open(path, 'r') as f:
+        lines = f.readlines()
+
+        constants = {}
+
+        for line in lines:
+            l, r = line.split('=')
+            const_name = l.strip()
+            const_val = r.strip()
+            constants[const_name] = const_val
+    return constants
 
 
 if __name__ == '__main__':
-    read_system('system.txt')
+    print(read_system('system.txt'))
+    print(read_constants('constants.txt'))
