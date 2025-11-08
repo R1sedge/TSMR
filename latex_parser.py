@@ -1,6 +1,4 @@
 import re
-from idlelib.replace import replace
-
 import sympy as sp
 
 
@@ -43,6 +41,7 @@ def read_system(path):
         variables.append(temp.group(1))
 
         expr = convert_expression(right)
+        expr = sp.sympify(expr)
 
         equations.append(expr)
 
@@ -58,10 +57,20 @@ def read_constants(path):
             l, r = line.split('=')
             const_name = l.strip()
             const_val = r.strip()
-            constants[const_name] = const_val
+            constants[sp.symbols(const_name)] = sp.sympify(const_val)
     return constants
+
+def read_starting_point(path):
+    with open(path, 'r') as f:
+        lines = f.readlines()
+
+        starting_points = []
+        for line in lines:
+            pass
+
 
 
 if __name__ == '__main__':
-    print(read_system('system.txt'))
-    print(read_constants('constants.txt'))
+    print(read_system('data/system.txt'))
+    print(read_constants('data/constants.txt'))
+    print(read_starting_point('data/starting_point.txt'))
