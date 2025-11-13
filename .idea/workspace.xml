@@ -4,14 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3d595416-027d-4a46-8512-07597038ce9c" name="Changes" comment="Working parser for system and constants">
-      <change afterPath="$PROJECT_DIR$/TSMR_solver.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/constants.txt" afterDir="false" />
+    <list default="true" id="3d595416-027d-4a46-8512-07597038ce9c" name="Changes" comment="LaTeX version last commit">
+      <change afterPath="$PROJECT_DIR$/data/start_point.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/system.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/constants.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/latex_parser.py" beforeDir="false" afterPath="$PROJECT_DIR$/latex_parser.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TSMR_solver.py" beforeDir="false" afterPath="$PROJECT_DIR$/TSMR_solver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/constants.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/constants.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/system.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/system.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/latex_parser.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/system.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,10 +42,12 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Python.TSMR_solver.executor": "Run",
     "Python.latex_parser.executor": "Run",
-    "Python.main.executor": "Debug",
+    "Python.main.executor": "Run",
     "Python.monome.executor": "Run",
     "Python.schema.executor": "Debug",
+    "Python.system.executor": "Run",
     "Python.test.executor": "Run",
     "Python.utils.executor": "Run",
     "Python.ваы.executor": "Run",
@@ -87,7 +91,9 @@
       <workItem from="1762335894693" duration="1879000" />
       <workItem from="1762411955259" duration="4960000" />
       <workItem from="1762445510460" duration="12165000" />
-      <workItem from="1762496380849" duration="26300000" />
+      <workItem from="1762496380849" duration="33864000" />
+      <workItem from="1762962909421" duration="8214000" />
+      <workItem from="1763030685997" duration="5954000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -113,25 +119,54 @@
       <option name="project" value="LOCAL" />
       <updated>1762460537509</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="LaTeX version last commit">
+      <option name="closed" value="true" />
+      <created>1762614113376</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1762614113376</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />
     <MESSAGE value="Latex system parser" />
     <MESSAGE value="Working parser for system and constants" />
-    <option name="LAST_COMMIT_MESSAGE" value="Working parser for system and constants" />
+    <MESSAGE value="LaTeX version last commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="LaTeX version last commit" />
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="eq" />
+      </configuration>
+    </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/TSMR$latex_parser.coverage" NAME="latex_parser Coverage Results" MODIFIED="1762605339844" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/TSMR$test.coverage" NAME="test Coverage Results" MODIFIED="1762607380399" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/TSMR$utils.coverage" NAME="utils Coverage Results" MODIFIED="1762594739841" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/TSMR$utils.coverage" NAME="utils Coverage Results" MODIFIED="1763034876520" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/TSMR$system.coverage" NAME="system Coverage Results" MODIFIED="1763043423195" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/TSMR$.coverage" NAME="ваы Coverage Results" MODIFIED="1761747599212" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/TSMR$schema.coverage" NAME="schema Coverage Results" MODIFIED="1762503168693" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/TSMR$main.coverage" NAME="main Coverage Results" MODIFIED="1762594846867" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/TSMR$main.coverage" NAME="main Coverage Results" MODIFIED="1763043449138" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/TSMR$monome.coverage" NAME="monome Coverage Results" MODIFIED="1762593208298" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/TSMR$TSMR_solver.coverage" NAME="TSMR_solver Coverage Results" MODIFIED="1763035341324" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
