@@ -36,7 +36,7 @@ class Solver:
         print()
         for eq in self.equations:
             for coef, m in eq.monomes:
-                print(str(coef) + '*' + m.name, end=' ')
+                print(str(coef), m.name, end=' ')
             print()
 
 if __name__ == '__main__':

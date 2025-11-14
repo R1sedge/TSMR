@@ -33,15 +33,27 @@ class Equation:
     def __init__(self, equation, UnMs):
         equation = str(equation)
         self.monomes = []
-        parts = re.split(r' \+ | - ', equation) # TODO Нужно добавить учёт знака в коэффициенты
-        parts = equation.split(' + ')
-        for monome in parts:
+        parts = re.split(r' (\+|-) ', equation)
+
+        elements = parts[::2]
+        operators = ['+'] + parts[1::2]
+
+        for sign, monome in zip(operators, elements):
+
             split_id = monome.find('*')
             if monome[split_id + 1] != '*' and split_id != -1:
                 coef = float(monome[0:split_id])
                 monome = monome[split_id + 1:]
             else:
-                coef = 1
+                neg_flag = True if monome[0] == '-' else False
+                if neg_flag:
+                    coef = -1
+                    monome = monome[1:]
+                else:
+                    coef = 1
+
+            coef = -coef if sign == '-' else coef
+
             if monome not in UnMs.keys(): # Если моном ещё не определён
                 m = Monome(monome, UnMs)
                 self.monomes.append((coef, m))
