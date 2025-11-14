@@ -32,7 +32,6 @@ class Monome:
                 self.parents.append(self.parents[0])
 
 
-
 class Equation:
     def __init__(self, equation, UnMs):
         equation = str(equation)
@@ -44,17 +43,18 @@ class Equation:
 
         for sign, monome in zip(operators, elements):
 
+            # Обработка "-" перед мономом
+            coef = 1
+            neg_flag = True if monome[0] == '-' else False
+            if neg_flag:
+                monome = monome[1:]
+                coef = -1
+
             split_id = monome.find('*')
-            if monome[split_id + 1] != '*' and split_id != -1:
-                coef = float(monome[0:split_id])
-                monome = monome[split_id + 1:]
-            else:
-                neg_flag = True if monome[0] == '-' else False
-                if neg_flag:
-                    coef = -1
-                    monome = monome[1:]
-                else:
-                    coef = 1
+            if split_id != -1 and monome[split_id + 1] != '*':
+                if monome[0:split_id] not in UnMs:
+                    coef *= float(monome[0:split_id])
+                    monome = monome[split_id + 1:]
 
             coef = -coef if sign == '-' else coef
 
@@ -64,6 +64,13 @@ class Equation:
                 UnMs[monome] = m
             else:
                 self.monomes.append((coef, UnMs[monome]))
+
+    def sum_up(self, i):
+        result = 0
+        for coef, monome in self.monomes:
+            result += coef * monome.coeffs[i]
+        result /= (i + 1)
+        return result
 
 
 if __name__ == "__main__":

@@ -8,6 +8,8 @@ class Solver:
         self.max_degree = max_degree
 
         self.variables = system.variables
+        self.var_num = len(self.variables)
+        self.var_monomes = {}
         self.unique_monomes = {}
 
         # Создаём мономы переменных
@@ -19,8 +21,33 @@ class Solver:
         for variable in system.variables:
             self.equations.append(Equation(system.equations[variable], self.unique_monomes))
 
+        # Вносим начальные данные
+        for variable in self.variables:
+            self.unique_monomes[variable].coeffs[0] = system.start_point[variable]
+
+        # Разделяем мономы переменных и остальные
+        for variable in self.variables:
+            self.var_monomes[variable] = self.unique_monomes[variable]
+            self.unique_monomes.pop(variable)
+
+
+
     def find_coefs(self):
-        pass
+
+        def compute_monomes(i):
+            for monome in self.unique_monomes.values():
+                monome.coeffs[i] = sum([monome.parents[0].coeffs[l] * monome.parents[1].coeffs[i - l] for l in range(i + 1)])
+
+        def compute_variables(i):
+            for k in range(self.var_num):
+                self.var_monomes[self.variables[k]].coeffs[i] = self.equations[k].sum_up(i - 1)
+
+
+        for j in range(self.max_degree - 1):
+            compute_monomes(j)
+            compute_variables(j + 1)
+
+
 
     def find_step(self):
         pass
@@ -32,6 +59,9 @@ class Solver:
         pass
 
     def display(self):
+        print('Variable Monomes:')
+        print(self.var_monomes)
+        print('Other Monomes:')
         print(self.unique_monomes)
         print()
         for eq in self.equations:

@@ -12,8 +12,8 @@ class System:
 
         self.read_constants(constants_path)
         self.read_system(system_path)
-        self.replace_constants()
         self.read_start_point(start_path)
+        self.replace_constants()
 
     def read_system(self, system_path):
         with open(system_path) as file:
@@ -33,8 +33,14 @@ class System:
 
     def replace_constants(self):
         for variable in self.variables:
-            self.equations[variable] = self.equations[variable].xreplace(self.constants).subs(sp.pi, self.constants[sp.symbols('pi')])
+            self.equations[variable] = self.equations[variable].xreplace(self.constants)
+            if sp.symbols('pi') in self.constants:
+                self.equations[variable] = self.equations[variable].subs(sp.pi, self.constants[sp.symbols('pi')])
 
+        for start in self.start_point:
+            self.start_point[start] =  self.start_point[start].xreplace(self.constants)
+            if sp.symbols('pi') in self.constants:
+                self.start_point[start] = self.start_point[start].subs(sp.pi, self.constants[sp.symbols('pi')])
     def read_start_point(self, start_path):
         with open(start_path) as file:
             for line in file:
