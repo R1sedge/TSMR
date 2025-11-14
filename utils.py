@@ -2,6 +2,7 @@ import re
 import numpy as np
 import sympy as sp
 
+
 class Monome:
     def __init__(self, s, UnMs, max_series_degree=50):
         self.name = str(s)
@@ -27,6 +28,9 @@ class Monome:
             self.parents = []
             for name in self.signature:
                 self.parents.append(UnMs[name])
+            if len(self.parents) == 1:
+                self.parents.append(self.parents[0])
+
 
 
 class Equation:
@@ -60,8 +64,6 @@ class Equation:
                 UnMs[monome] = m
             else:
                 self.monomes.append((coef, UnMs[monome]))
-
-
 
 
 if __name__ == "__main__":
