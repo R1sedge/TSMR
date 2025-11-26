@@ -1,10 +1,26 @@
-import numpy as np
-from winerror import NOERROR
-
+import logging
 from utils import Equation, Monome
+import numpy as np
 import matplotlib.pyplot as plt
 from math import sqrt
+import os
 
+# Путь к файлу лога
+LOG_FILE = "solver.log"
+
+# Удаляем старый лог-файл, если он существует
+if os.path.exists(LOG_FILE):
+    os.remove(LOG_FILE)
+
+# Настройка логирования
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("solver.log"),  # Логи в файл
+        logging.StreamHandler()              # Логи в консоль
+    ]
+)
 
 class Solver:
     def __init__(self, t0, t1, system, atol, rtol, max_degree):
@@ -50,7 +66,6 @@ class Solver:
         # Вносим начальные данные
         self.use_start_point()
 
-
         # Предварительные вычисления
         self.find_step()
         self.find_degree()
@@ -59,9 +74,7 @@ class Solver:
         for i in range(self.var_num):
             self.var_monomes[i].coeffs[0] = self.start_point[i]
 
-
     def find_coeffs(self):
-
         def compute_monomes(i):
             for monome in self.unique_monomes.values():
                 monome.coeffs[i] = sum([monome.parents[0].coeffs[l] * monome.parents[1].coeffs[i - l] for l in range(i + 1)])
@@ -73,7 +86,6 @@ class Solver:
         for j in range(self.max_degree - 1):
             compute_monomes(j)
             compute_variables(j + 1)
-
 
     def find_degree(self):
         pass
@@ -103,18 +115,22 @@ class Solver:
     def sum_one_series(self, i, degree):
         return sum(self.var_monomes[i].coeffs[m] * self.current_step ** m for m in range(degree))
 
-
     def integrate(self):
         max_steps = 1000
         steps = 0
-        while self.current_t < self.t1 and steps < max_steps :
+        logging.info("Starting integration process")
+        while self.current_t < self.t1 and steps < max_steps:
             self.x_history.append(self.start_point.copy())
             self.t_history.append(self.current_t)
+
+            logging.info(f"Iteration {steps}: t = {float(self.current_t):.6f}, "
+                         f"step = {float(self.current_step):.6f}, "
+                         f"variables = {[round(float(val), 6) for val in self.start_point]}]")
 
             self.find_coeffs()
             self.find_step()
 
-            self.current_step = 0.05
+            #self.current_step = 0.05   # Для отладки
 
             if self.current_t + self.current_step > self.t1:
                 self.current_step = self.t1 - self.current_t
@@ -125,15 +141,16 @@ class Solver:
             self.current_t += self.current_step
             steps += 1
 
-        print(steps)
-        self.x_history.append(self.start_point)
+        logging.info(f"Integration finished at t = {float(self.current_t):.6f} after {steps} steps")
+        logging.info(f"Final variables: {[float(val) for val in self.start_point]}")
+        self.x_history.append(self.start_point.copy())
         self.t_history.append(self.current_t)
-        return self.start_point
+        return self.start_point.copy()
 
     def display(self):
         print('Variable Monomes:')
         print(self.var_monomes)
-        print('Other Monomes:')
+        print('Other Mononomes:')
         print(self.unique_monomes)
         print()
         for eq in self.equations:
@@ -150,7 +167,3 @@ class Solver:
             plt.xlabel('Time')
             plt.ylabel(self.variables[i])
             plt.show()
-
-
-if __name__ == '__main__':
-    pass
