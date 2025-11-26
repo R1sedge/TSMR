@@ -4,36 +4,47 @@ import sympy as sp
 
 
 class Monome:
-    def __init__(self, s, UnMs, max_series_degree=50):
+    def __init__(self, s, unique_monomes,  max_series_degree=50):
         self.name = str(s)
         self.max_series_degree = max_series_degree
         self.degree = 0
         self.parents = None
-        self.signature = {}
+        self.signature = []
         self.coeffs = np.zeros(self.max_series_degree)
 
-        s = str(s)
-        parts = re.split(r'(?<!\*)\*(?!\*)', s)
+        # Разбиваем выражение на множители, например: x1*x2**2 -> x1, x2**2
+        parts = re.split(r'(?<!\*)\*(?!\*)', self.name)
 
         for part in parts:
-            parts = part.split('**')
-            if len(parts) == 2:
-                name, deg = parts[0], int(parts[1])
+            if '**' in part:
+                name, deg_part = part.split('**')
+                name = name.strip()
+                deg = int(deg_part)
             else:
-                name, deg = parts[0], 1
+                name = part.strip()
+                deg = 1
             self.degree += deg
-            self.signature[name] = deg
 
-        if self.degree == 2: # Если не просто переменная
-            self.parents = []
-            for name in self.signature:
-                self.parents.append(UnMs[name])
-            if len(self.parents) == 1:
-                self.parents.append(self.parents[0])
+            match = re.match(r'x_(\d+)', name)
+            if match:
+                idx = int(match.group(1))
+            else:
+                raise ValueError(f"Invalid variable name in monome: {name}")
+            self.signature.extend([idx] * deg)
+        if self.degree >1:
+            self.parents = [unique_monomes[f'x_{idx}'] for idx in self.signature]
+        else:
+            self.parents = None
 
+    def eval(self, x_val):
+        """Вычисление монома"""
+        result = 1.0
+        for idx in self.signature: # Пока что и так нормально
+            result *= x_val[idx]
+        return result
 
 class Equation:
-    def __init__(self, equation, UnMs):
+    def __init__(self, equation, unique_monomes, max_series_degree=50):
         equation = str(equation)
         self.monomes = []
         parts = re.split(r' (\+|-) ', equation)
@@ -41,35 +52,45 @@ class Equation:
         elements = parts[::2]
         operators = ['+'] + parts[1::2]
 
-        for sign, monome in zip(operators, elements):
+        for sign, monome_name in zip(operators, elements):
 
             # Обработка "-" перед мономом
             coef = 1
-            neg_flag = True if monome[0] == '-' else False
+            neg_flag = True if monome_name[0] == '-' else False
             if neg_flag:
-                monome = monome[1:]
+                monome_name = monome_name[1:]
                 coef = -1
 
-            split_id = monome.find('*')
-            if split_id != -1 and monome[split_id + 1] != '*':
-                if monome[0:split_id] not in UnMs:
-                    coef *= float(monome[0:split_id])
-                    monome = monome[split_id + 1:]
+            split_id = monome_name.find('*')
+            if split_id != -1 and monome_name[split_id + 1] != '*': # Если это умножение двух переменных
+                try:
+                    coef *= float(monome_name[0:split_id])
+                    monome_name = monome_name[split_id + 1:]
+                except ValueError:
+                    pass
 
             coef = -coef if sign == '-' else coef
 
-            if monome not in UnMs.keys(): # Если моном ещё не определён
-                m = Monome(monome, UnMs)
-                self.monomes.append((coef, m))
-                UnMs[monome] = m
+            if monome_name not in unique_monomes.keys(): # Если моном ещё не определён
+                monome = Monome(monome_name, unique_monomes, max_series_degree)
+                self.monomes.append((coef, monome))
+                unique_monomes[monome_name] = monome
             else:
-                self.monomes.append((coef, UnMs[monome]))
+                self.monomes.append((coef, unique_monomes[monome_name]))
 
+    # Функция для подсчета коэффициентов
     def sum_up(self, i):
         result = 0
         for coef, monome in self.monomes:
             result += coef * monome.coeffs[i]
         result /= (i + 1)
+        return result
+
+    def sum_absolute(self, x_val):
+        """Сумма модулей мономов"""
+        result = 0
+        for coef, monome in self.monomes:
+            result += abs(coef * monome.eval(x_val))
         return result
 
 

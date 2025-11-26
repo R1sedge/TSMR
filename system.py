@@ -1,14 +1,17 @@
 import sympy as sp
-from win32com.client import constants
-
 
 class System:
-    def __init__(self, system_path, constants_path, start_path):
-        self.equations = {}
+    def __init__(self, data_path):
+
+        system_path = data_path + '/system.txt'
+        constants_path = data_path + '/constants.txt'
+        start_path = data_path + '/start_point.txt'
+
+        self.equations = []
         self.variables = []
         self.constants = {}
-        self.start_point = {}
-        self.constants = {}
+        self.start_point = []
+        self.var_num = 0
 
         self.read_constants(constants_path)
         self.read_system(system_path)
@@ -23,7 +26,8 @@ class System:
                 var_name = left[0:-1]
                 self.variables.append(var_name)
 
-                self.equations[var_name] = sp.sympify(right)
+                self.equations.append(sp.sympify(right))
+        self.var_num = len(self.variables)
 
     def read_constants(self, constants_path):
         with open(constants_path) as file:
@@ -32,25 +36,27 @@ class System:
                 self.constants[sp.symbols(var_name)] = sp.sympify(val).evalf()
 
     def replace_constants(self):
-        for variable in self.variables:
-            self.equations[variable] = self.equations[variable].xreplace(self.constants)
-            if sp.symbols('pi') in self.constants:
-                self.equations[variable] = self.equations[variable].subs(sp.pi, self.constants[sp.symbols('pi')])
 
-        for start in self.start_point:
-            self.start_point[start] =  self.start_point[start].xreplace(self.constants)
+        for i in range(self.var_num):
+            self.equations[i] = self.equations[i].xreplace(self.constants)
             if sp.symbols('pi') in self.constants:
-                self.start_point[start] = self.start_point[start].subs(sp.pi, self.constants[sp.symbols('pi')])
+                self.equations[i] = self.equations[i].subs(sp.pi, self.constants[sp.symbols('pi')])
+
+            self.start_point[i] =  self.start_point[i].xreplace(self.constants)
+            if sp.symbols('pi') in self.constants:
+                self.start_point[i] = self.start_point[i].subs(sp.pi, self.constants[sp.symbols('pi')])
+
     def read_start_point(self, start_path):
+        self.start_point = [0] * self.var_num
         with open(start_path) as file:
             for line in file:
                 var_name, val = line.split(' = ')
-                self.start_point[var_name] = sp.sympify(val).evalf()
+                self.start_point[self.variables.index(var_name)] = sp.sympify(val).evalf()
 
     def display_system(self):
         print('System')
-        for var in self.variables:
-            print(f'{var} = {self.equations[var]}')
+        for i in range(self.var_num):
+            print(f'{self.variables[i]} = {self.equations[i]}')
 
         print('\nVariables:')
         print(self.variables)
@@ -60,12 +66,12 @@ class System:
             print(f'{var} = {self.constants[var]}')
 
         print('\nStart point')
-        for var in self.variables:
-            print(f'{var} = {self.start_point[var]}')
+        for i in range(self.var_num):
+            print(f'{self.variables[i]} = {self.start_point[i]}')
 
 
 if __name__ == '__main__':
-    system = System('data/system.txt', 'data/constants.txt', 'data/start_point.txt')
+    system = System('data2')
     system.display_system()
 
 
