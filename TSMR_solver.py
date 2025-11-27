@@ -39,6 +39,7 @@ class Solver:
         self.var_monomes = [None] * self.var_num
         self.unique_monomes = {}
 
+        self.min_step = 0.001
         self.max_step = 0.5
         self.current_step = 0.5
 
@@ -99,20 +100,49 @@ class Solver:
         self.current_step = max_step
 
     def correct_step(self):
-        step = self.current_step
 
         summ = sum([
             (self.delta_T(self.current_step, i) ** 2) *
             (self.atol + self.rtol * max(abs(self.start_point[i]), abs(self.sum_one_series(i, self.current_step, self.current_degree))))
             for i in range(self.var_num)])
 
-        new_step = step * (sqrt((1 / self.var_num) * summ)) ** (1 / (self.current_degree + 1))
-        self.current_step = new_step
+        new_step = self.current_step * (sqrt((1 / self.var_num) * summ)) ** (1 / (self.current_degree + 1))
+        self.current_step = max(new_step, self.current_step)
+
+    def correct_step_iter(self, step, D=5):
+
+        d = step / D
+        s = np.sign(self.rtol - self.calculate_relative_error(step))
+
+        new_step = step
+
+        while new_step > self.min_step:
+            i = 1
+            while i < D:
+                new_step = step + s * i * d
+                test_s = np.sign(self.rtol - self.calculate_relative_error(new_step))
+
+                if test_s * s < 0:
+                    if s > 0:
+                        new_step = step + (i - 1) * d
+                    return new_step
+
+                if i == D - 1:
+                    step = new_step
+                    d = step / D
+
+                i += 1
+        return self.min_step
+
+    def calculate_relative_error(self, step):
+        numerator = np.linalg.norm(np.array([self.delta_T(step, i) for i in range(self.var_num)]))
+        denominator = np.linalg.norm(np.array([self.sum_one_series(i, step, self.min_degree) for i in range(self.var_num)])) + self.atol
+        return numerator / denominator
 
     def delta_T(self, step, i): # TODO Не понимаю эту функцию
         higher_deg_sum = self.sum_one_series(i, step, self.current_degree)
         lower_deg_sum = self.sum_one_series(i, step, self.min_degree)
-        return (higher_deg_sum - lower_deg_sum) - (self.current_degree - self.min_degree)
+        return higher_deg_sum - lower_deg_sum
 
     def sum_up_series(self):
         """Суммирование ряда для переменных -> замены начальной точки"""
@@ -121,11 +151,11 @@ class Solver:
 
     def sum_one_series(self, i, step, degree):
         """Суммирование ряда для одной переменной"""
-        return sum(self.var_monomes[i].coeffs[m] * step ** m for m in range(degree))
+        return float(sum(self.var_monomes[i].coeffs[m] * step ** m for m in range(degree)))
 
     def integrate(self):
 
-        max_steps = 1000
+        max_steps = 10000
         steps = 0
 
         logging.info("Starting integration process")
@@ -134,13 +164,13 @@ class Solver:
             self.x_history.append(self.start_point.copy())
             self.t_history.append(self.current_t)
 
-            logging.info(f"Iteration {steps}: t = {float(self.current_t):.6f}, "
-                         f"step = {float(self.current_step):.6f}, "
-                         f"variables = {[round(float(val), 6) for val in self.start_point]}]")
+
 
             self.find_coeffs()
+
             self.find_step()
             self.correct_step()
+            self.current_step = self.correct_step_iter(self.current_step) # TODO Почему-то стало хуже
 
             #self.current_step = 0.05   # Для отладки
 
@@ -152,6 +182,10 @@ class Solver:
 
             self.current_t += self.current_step
             steps += 1
+
+            logging.info(f"Iteration {steps}: t = {float(self.current_t):.6f}, "
+                         f"step = {float(self.current_step):.6f}, "
+                         f"variables = {[round(float(val), 6) for val in self.start_point]}]")
 
         logging.info(f"Integration finished at t = {float(self.current_t):.6f} after {steps} steps")
         logging.info(f"Final variables: {[float(val) for val in self.start_point]}")

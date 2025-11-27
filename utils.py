@@ -5,7 +5,7 @@ import sympy as sp
 
 class Monome:
     """Класс монома"""
-    def __init__(self, s, unique_monomes,  max_series_degree=50):
+    def __init__(self, s, unique_monomes,  max_series_degree=100):
         self.name = str(s)
         self.max_series_degree = max_series_degree
         self.degree = 0
@@ -46,7 +46,7 @@ class Monome:
 
 class Equation:
     """Класс уравнения"""
-    def __init__(self, equation, unique_monomes, max_series_degree=50):
+    def __init__(self, equation, unique_monomes, max_series_degree=100):
         equation = str(equation)
         self.monomes = []
         parts = re.split(r' (\+|-) ', equation)
