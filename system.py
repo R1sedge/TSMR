@@ -1,6 +1,16 @@
 import sympy as sp
 
 class System:
+    """
+    Класс для считывания и хранения системы дифференциальных уравнений.
+    Данные считываются из дирректории data_path следующей структуры:
+
+    data_path:\n
+    - system.txt - файл с уравнениями \n
+    - constants.txt - файл с константами \n
+    - start_point.txt - файл с начальной точкой
+
+    """
     def __init__(self, data_path):
 
         system_path = data_path + '/system.txt'
@@ -19,6 +29,7 @@ class System:
         self.replace_constants()
 
     def read_system(self, system_path):
+        """Читаем систему уравнений из файла data/system.txt"""
         with open(system_path) as file:
             for line in file:
                 left, right = line.split(' = ')
@@ -30,12 +41,14 @@ class System:
         self.var_num = len(self.variables)
 
     def read_constants(self, constants_path):
+        """Читаем константы из файла data/constants.txt"""
         with open(constants_path) as file:
             for line in file:
                 var_name, val = line.split(' = ')
                 self.constants[sp.symbols(var_name)] = sp.sympify(val).evalf()
 
     def replace_constants(self):
+        """Заменяем константы в уравнениях"""
 
         for i in range(self.var_num):
             self.equations[i] = self.equations[i].xreplace(self.constants)
@@ -47,6 +60,7 @@ class System:
                 self.start_point[i] = self.start_point[i].subs(sp.pi, self.constants[sp.symbols('pi')])
 
     def read_start_point(self, start_path):
+        """Читаем начальную точку из файла data/start_point.txt"""
         self.start_point = [0] * self.var_num
         with open(start_path) as file:
             for line in file:

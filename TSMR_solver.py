@@ -91,7 +91,7 @@ class Solver:
         pass
 
     def find_step(self):
-        max_value = max([equation.sum_absolute(self.start_point) for equation in self.equations])
+        max_value = max([equation.sum_up_absolute(self.start_point) for equation in self.equations])
         if max_value != 0:
             max_step = min(1 / max_value, self.max_step)
         else:
@@ -100,26 +100,37 @@ class Solver:
 
     def correct_step(self):
         step = self.current_step
-        new_step = (step * (sqrt((1 / self.var_num) *
-                    sum([(self.delta_T(self.current_step, i) ** 2) * (self.atol + self.rtol * max(abs(self.start_point)[i], abs()))
-                    for i in range(self.var_num)])))
-                    ** (1 / (self.max_degree + 1)))
 
-    def delta_T(self, step, i):
-        pass
+        summ = sum([
+            (self.delta_T(self.current_step, i) ** 2) *
+            (self.atol + self.rtol * max(abs(self.start_point[i]), abs(self.sum_one_series(i, self.current_step, self.current_degree))))
+            for i in range(self.var_num)])
+
+        new_step = step * (sqrt((1 / self.var_num) * summ)) ** (1 / (self.current_degree + 1))
+        self.current_step = new_step
+
+    def delta_T(self, step, i): # TODO Не понимаю эту функцию
+        higher_deg_sum = self.sum_one_series(i, step, self.current_degree)
+        lower_deg_sum = self.sum_one_series(i, step, self.min_degree)
+        return (higher_deg_sum - lower_deg_sum) - (self.current_degree - self.min_degree)
 
     def sum_up_series(self):
+        """Суммирование ряда для переменных -> замены начальной точки"""
         for i in range(self.var_num):
-            self.start_point[i] = self.sum_one_series(i, self.current_degree)
+            self.start_point[i] = self.sum_one_series(i, self.current_step, self.current_degree)
 
-    def sum_one_series(self, i, degree):
-        return sum(self.var_monomes[i].coeffs[m] * self.current_step ** m for m in range(degree))
+    def sum_one_series(self, i, step, degree):
+        """Суммирование ряда для одной переменной"""
+        return sum(self.var_monomes[i].coeffs[m] * step ** m for m in range(degree))
 
     def integrate(self):
+
         max_steps = 1000
         steps = 0
+
         logging.info("Starting integration process")
         while self.current_t < self.t1 and steps < max_steps:
+
             self.x_history.append(self.start_point.copy())
             self.t_history.append(self.current_t)
 
@@ -129,6 +140,7 @@ class Solver:
 
             self.find_coeffs()
             self.find_step()
+            self.correct_step()
 
             #self.current_step = 0.05   # Для отладки
 
@@ -164,6 +176,7 @@ class Solver:
 
             plt.plot(self.t_history, var_history)
 
-            plt.xlabel('Time')
+            plt.title(self.variables[i] + f' = {var_history[-1]}')
+            plt.xlabel('Время')
             plt.ylabel(self.variables[i])
             plt.show()

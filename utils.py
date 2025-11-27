@@ -4,6 +4,7 @@ import sympy as sp
 
 
 class Monome:
+    """Класс монома"""
     def __init__(self, s, unique_monomes,  max_series_degree=50):
         self.name = str(s)
         self.max_series_degree = max_series_degree
@@ -44,6 +45,7 @@ class Monome:
         return result
 
 class Equation:
+    """Класс уравнения"""
     def __init__(self, equation, unique_monomes, max_series_degree=50):
         equation = str(equation)
         self.monomes = []
@@ -78,16 +80,16 @@ class Equation:
             else:
                 self.monomes.append((coef, unique_monomes[monome_name]))
 
-    # Функция для подсчета коэффициентов
     def sum_up(self, i):
+        """Сумма мономов уравнения"""
         result = 0
         for coef, monome in self.monomes:
             result += coef * monome.coeffs[i]
         result /= (i + 1)
         return result
 
-    def sum_absolute(self, x_val):
-        """Сумма модулей мономов"""
+    def sum_up_absolute(self, x_val):
+        """Сумма модулей мономов уравнения"""
         result = 0
         for coef, monome in self.monomes:
             result += abs(coef * monome.eval(x_val))
