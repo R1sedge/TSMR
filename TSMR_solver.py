@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from math import sqrt
 import os
+import time
 
 # Путь к файлу лога
 LOG_FILE = "solver.log"
@@ -75,7 +76,7 @@ class Solver:
         for i in range(self.var_num):
             self.var_monomes[i].coeffs[0] = self.start_point[i]
 
-    def find_coeffs(self):
+    def find_coeffs(self, degree):
         def compute_monomes(i):
             for monome in self.unique_monomes.values():
                 monome.coeffs[i] = sum([monome.parents[0].coeffs[l] * monome.parents[1].coeffs[i - l] for l in range(i + 1)])
@@ -84,12 +85,31 @@ class Solver:
             for k in range(self.var_num):
                 self.var_monomes[k].coeffs[i] = self.equations[k].sum_up(i - 1)
 
-        for j in range(self.max_degree - 1):
+        for j in range(degree - 1):
             compute_monomes(j)
             compute_variables(j + 1)
 
     def find_degree(self):
         pass
+
+    def test_processor_time(self, path):
+        times = []
+        for degree in range(self.min_degree, self.max_degree + 1):
+
+            elapsed_times = []
+            for i in range(100):
+                start_time = time.perf_counter()
+                self.find_coeffs(degree)
+                end_time = time.perf_counter()
+                elapsed_time = end_time - start_time
+                elapsed_times.append(elapsed_time)
+
+            average_time = sum(elapsed_times) / len(elapsed_times)
+            times.append(average_time)
+
+        with open(path, 'w') as file:
+            for result in times:
+                file.write(f"{result}\n")
 
     def find_step(self):
         max_value = max([equation.sum_up_absolute(self.start_point) for equation in self.equations])
@@ -109,7 +129,7 @@ class Solver:
         new_step = self.current_step * (sqrt((1 / self.var_num) * summ)) ** (1 / (self.current_degree + 1))
         self.current_step = max(new_step, self.current_step)
 
-    def correct_step_iter(self, step, D=5):
+    def correct_step_iter(self, step, D=5): # TODO Что то тут не так
 
         d = step / D
         s = np.sign(self.rtol - self.calculate_relative_error(step))
@@ -164,9 +184,7 @@ class Solver:
             self.x_history.append(self.start_point.copy())
             self.t_history.append(self.current_t)
 
-
-
-            self.find_coeffs()
+            self.find_coeffs(self.current_degree)
 
             self.find_step()
             self.correct_step()
