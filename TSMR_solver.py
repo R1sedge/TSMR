@@ -44,6 +44,8 @@ class Solver:
         self.max_step = 0.5
         self.current_step = 0.5
 
+        self.processor_time = []
+
         self.t0 = t0
         self.t1 = t1
         self.current_t = t0
@@ -110,6 +112,12 @@ class Solver:
         with open(path, 'w') as file:
             for result in times:
                 file.write(f"{result}\n")
+
+    def load_processor_time(self, path):
+        with open(path, 'r') as file:
+            for line in file:
+                time = float(line.strip())
+                self.processor_time.append(time)
 
     def find_step(self):
         max_value = max([equation.sum_up_absolute(self.start_point) for equation in self.equations])
